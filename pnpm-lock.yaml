@@ -14,6 +14,12 @@ importers:
       artillery-engine-socketio-v3:
         specifier: ^1.2.0
         version: 1.2.0
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
+      socket.io-client:
+        specifier: ^4.8.1
+        version: 4.8.1
 
 packages:
 

@@ -1,0 +1,62 @@
+config:
+  target: "{{ $processEnvironment.TARGET }}"
+
+  phases:
+    # 워밍업 페이즈: 10명의 사용자로 시작
+    - duration: 20
+      arrivalRate: 1
+      rampTo: 10
+      name: "Warm up phase"
+
+    # 점진적 증가 페이즈 1: 10 -> 100명
+    - duration: 30
+      arrivalRate: 10
+      rampTo: 100
+      name: "Ramp up phase 1"
+
+    # 점진적 증가 페이즈 2: 100 -> 200명
+    - duration: 30
+      arrivalRate: 100
+      rampTo: 200
+      name: "Ramp up phase 2"
+
+    # 최종 부하 페이즈: 200 -> 300명
+    - duration: 30
+      arrivalRate: 200
+      rampTo: 300
+      name: "Peak load phase"
+
+  engines:
+    socketio-v3: {}
+
+  plugins:
+    metrics-by-endpoint: {}
+
+  variables:
+    roomId: "{{ $processEnvironment.ROOM_ID }}"
+
+  socketio:
+    extraHeaders:
+      accessToken: "Bearer {{ $processEnvironment.JWT_TOKEN }}"
+
+scenarios:
+  - name: "Chat room flow"
+    engine: socketio
+
+    flow:
+      # 방 입장
+      - emit:
+          channel: "joinRoom"
+          data:
+            roomId: "{{ roomId }}"
+      - think: 2
+
+      # 채팅 메시지 전송
+      - loop:
+          - emit:
+              channel: "chat"
+              data:
+                roomId: "{{ roomId }}"
+                message: "Test message {{ $randomNumber(1, 1000) }}"
+          - think: 1
+        count: 5
