@@ -2,7 +2,7 @@ config:
   target: "{{ $processEnvironment.TARGET }}"
 
   phases:
-    # 워밍업 페이즈: 10명의 사용자로 시작
+    # 워밍업 페이즈: 소수의 사용자로 시작
     - duration: 20
       arrivalRate: 1
       rampTo: 10
@@ -14,17 +14,32 @@ config:
       rampTo: 100
       name: "Ramp up phase 1"
 
+    # 안정화 구간 1
+    - duration: 20
+      arrivalRate: 100
+      name: "Stability phase 1"
+
     # 점진적 증가 페이즈 2: 100 -> 200명
     - duration: 30
       arrivalRate: 100
       rampTo: 200
       name: "Ramp up phase 2"
 
-    # 최종 부하 페이즈: 200 -> 300명
+    # 안정화 구간 2
+    - duration: 20
+      arrivalRate: 200
+      name: "Stability phase 2"
+
+    # 최종 증가: 200 -> 300명
     - duration: 30
       arrivalRate: 200
       rampTo: 300
-      name: "Peak load phase"
+      name: "Peak ramp phase"
+
+    # 최종 안정화: 300명 유지
+    - duration: 20
+      arrivalRate: 300
+      name: "Peak stability phase"
 
   engines:
     socketio-v3: {}
